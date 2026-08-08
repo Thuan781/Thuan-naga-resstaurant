@@ -8,10 +8,13 @@ Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + Post
 
 ## Demo accounts
 
-| Role     | Email                 | Password   |
-| -------- | --------------------- | ---------- |
-| Admin    | kthuan781@gmail.com   | `admin123` |
-| Customer | demo@thuannaga.com    | `demo123`  |
+Login is **email + OTP** (no passwords). Enter the email and use the 6-digit code shown on screen
+(no email service is connected yet, so the code is displayed instead of emailed).
+
+| Role     | Email               |
+| -------- | ------------------- |
+| Admin    | kthuan781@gmail.com |
+| Customer | demo@thuannaga.com  |
 
 ## Getting started
 
@@ -25,7 +28,6 @@ npm run db:seed         # seed menu, users, sample orders, settings
 npm run dev             # http://localhost:3000
 ```
 
-Demo logins (after seeding): admin `kthuan781@gmail.com` / `admin123` · customer `demo@thuannaga.com` / `demo123`
 
 ## Deploying to Vercel
 

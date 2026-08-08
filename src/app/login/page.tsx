@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LoginForm } from "@/components/AuthForms";
+import OtpLoginForm from "@/components/OtpLoginForm";
 import { Logo } from "@/components/Logo";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -24,7 +24,8 @@ export default async function LoginPage({
         <Logo size={56} glow />
         <h1 className="mt-4 text-2xl font-extrabold text-slate-900">Welcome back</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Log in to order from <span className="font-semibold text-slate-700">Thuan Naga Restaurant</span>.
+          Log in to order from{" "}
+          <span className="font-semibold text-slate-700">Thuan Naga Restaurant</span>.
         </p>
         {error === "google_not_configured" && (
           <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 ring-1 ring-amber-200">
@@ -36,11 +37,11 @@ export default async function LoginPage({
             Google sign-in failed. Please try again.
           </p>
         )}
-        <LoginForm next={next} googleEnabled={googleEnabled} />
+        <OtpLoginForm mode="customer" next={next} googleEnabled={googleEnabled} />
       </div>
       <p className="mt-4 text-center text-xs text-slate-400">
-        Demo account: <span className="font-mono">demo@thuannaga.com</span> /{" "}
-        <span className="font-mono">demo123</span>
+        Demo account: <span className="font-mono">demo@thuannaga.com</span> — enter it above and use
+        the code shown.
       </p>
       <Link href="/" className="mt-3 text-center text-sm font-medium text-slate-500 hover:text-primary-600">
         ← Back to site

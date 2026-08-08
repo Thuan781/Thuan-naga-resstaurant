@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { RegisterForm } from "@/components/AuthForms";
+import OtpLoginForm from "@/components/OtpLoginForm";
 import { Logo } from "@/components/Logo";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -24,9 +24,9 @@ export default async function RegisterPage({
         <Logo size={56} glow />
         <h1 className="mt-4 text-2xl font-extrabold text-slate-900">Create your account</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Save addresses, track orders and reorder your favourites in one tap.
+          Enter your name and email — we’ll email you a code to set up your account.
         </p>
-        <RegisterForm next={next} googleEnabled={googleEnabled} />
+        <OtpLoginForm mode="customer" requireName next={next} googleEnabled={googleEnabled} />
       </div>
       <Link href="/" className="mt-3 text-center text-sm font-medium text-slate-500 hover:text-primary-600">
         ← Back to site

@@ -15,12 +15,27 @@ Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + SQLi
 
 ## Getting started
 
+The app uses **PostgreSQL** (free hosted options: Neon, Supabase, Vercel Postgres).
+
 ```bash
 npm install
-npx prisma db push      # create the SQLite database
+cp .env.example .env    # then paste your DATABASE_URL into .env
+npx prisma db push      # create the database tables
 npm run db:seed         # seed menu, users, sample orders, settings
 npm run dev             # http://localhost:3000
 ```
+
+Demo logins (after seeding): admin `admin@thuannaga.com` / `admin123` · customer `demo@thuannaga.com` / `demo123`
+
+## Deploying to Vercel
+
+1. Push this project to a GitHub repository.
+2. Sign in at [vercel.com](https://vercel.com) → **Add New → Project** → import the repo (Vercel auto-detects Next.js).
+3. In **Settings → Environment Variables**, add `DATABASE_URL` = your PostgreSQL connection string (same one from `.env`).
+4. Deploy. The `vercel-build` script syncs the database schema automatically on every deploy —
+   it never re-runs the seed, so live orders are preserved.
+
+## Scripts
 
 ## Scripts
 

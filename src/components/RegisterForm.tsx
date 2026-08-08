@@ -47,7 +47,6 @@ export default function RegisterForm({
     fd.set("name", name);
     fd.set("email", email);
     fd.set("password", password);
-    if (next) fd.set("next", next);
     const res = await registerAction(fd);
     setPending(false);
     if (res?.error) setError(res.error);
@@ -70,7 +69,6 @@ export default function RegisterForm({
               {error}
             </p>
           )}
-          {next && <input type="hidden" name="next" value={next} />}
           <Field label="Full name">
             <input name="name" autoComplete="name" required placeholder="Your name" className={inputCls()} />
           </Field>
@@ -137,7 +135,6 @@ export default function RegisterForm({
         </Field>
         <input type="hidden" name="name" value={name} />
         <input type="hidden" name="password" value={password} />
-        {next && <input type="hidden" name="next" value={next} />}
         <SubmitButton
           pending={verifying}
           disabled={code.trim().length !== 6}

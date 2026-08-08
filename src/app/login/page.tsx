@@ -10,9 +10,9 @@ export const metadata: Metadata = { title: "Log in" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; registered?: string }>;
 }) {
-  const { next, error } = await searchParams;
+  const { next, error, registered } = await searchParams;
   const user = await getCurrentUser();
   if (user) redirect("/");
 
@@ -27,6 +27,11 @@ export default async function LoginPage({
           Log in to order from{" "}
           <span className="font-semibold text-slate-700">Thuan Naga Restaurant</span>.
         </p>
+        {registered === "1" && (
+          <p className="mt-4 rounded-xl bg-accent-50 px-4 py-3 text-sm font-medium text-accent-800 ring-1 ring-accent-200">
+            ✅ Account created! Log in with the password you set.
+          </p>
+        )}
         {error === "google_not_configured" && (
           <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 ring-1 ring-amber-200">
             Google sign-in isn’t configured yet — the restaurant owner needs to add the Google OAuth keys.

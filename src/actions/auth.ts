@@ -12,7 +12,6 @@ export type AuthState = {
   email?: string;
   name?: string;
   password?: string;
-  next?: string;
 };
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -59,7 +58,6 @@ export async function registerAction(formData: FormData): Promise<AuthState> {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const next = String(formData.get("next") ?? "") || "/";
 
   if (!EMAIL_RE.test(email)) return { error: "Enter a valid email address." };
   if (name.length < 2) return { error: "Please enter your name." };
@@ -75,7 +73,7 @@ export async function registerAction(formData: FormData): Promise<AuthState> {
 
   const otp = await issueOtp(email, null);
   if (!otp.ok) return { error: otp.error };
-  return { ok: true, email, name, password, next };
+  return { ok: true, email, name, password };
 }
 
 /**
@@ -87,7 +85,6 @@ export async function verifyRegisterAction(formData: FormData): Promise<AuthStat
   const code = String(formData.get("code") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const next = String(formData.get("next") ?? "") || "/";
 
   if (!/^\d{6}$/.test(code)) return { error: "Enter the 6-digit code from the email." };
   if (password.length < 6) return { error: "Password must be at least 6 characters." };
@@ -100,7 +97,7 @@ export async function verifyRegisterAction(formData: FormData): Promise<AuthStat
 
   await prisma.passwordReset.update({ where: { id: otp.id }, data: { usedAt: new Date() } });
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       name: name || email.split("@")[0],
@@ -108,8 +105,8 @@ export async function verifyRegisterAction(formData: FormData): Promise<AuthStat
     },
   });
 
-  await createSession(user.id);
-  redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/");
+  // Account created — send the customer to log in with the password they set.
+  redirect("/login?registered=1");
 }
 
 /** Logs in with email + password (the password set at sign-up). */

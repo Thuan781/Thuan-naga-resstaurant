@@ -18,8 +18,6 @@ export default function RegisterForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [shownCode, setShownCode] = useState<string | null>(null);
-  const [codeSent, setCodeSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -37,8 +35,6 @@ export default function RegisterForm({
       setName(res.name ?? "");
       setEmail(res.email);
       setPassword(res.password ?? "");
-      setShownCode(res.code ?? null);
-      setCodeSent(!!res.sent);
       setCode("");
       setStep("otp");
     }
@@ -55,10 +51,6 @@ export default function RegisterForm({
     const res = await registerAction(fd);
     setPending(false);
     if (res?.error) setError(res.error);
-    else {
-      setShownCode(res?.code ?? null);
-      setCodeSent(!!res?.sent);
-    }
   }
 
   async function handleVerify(formData: FormData) {
@@ -127,7 +119,7 @@ export default function RegisterForm({
             {error}
           </p>
         )}
-        <OtpStatusPanel sent={codeSent} email={email} code={shownCode} />
+        <OtpStatusPanel email={email} />
         <Field label="Email">
           <input name="email" value={email} readOnly className={inputCls(true)} />
         </Field>

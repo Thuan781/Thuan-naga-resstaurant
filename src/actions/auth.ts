@@ -10,8 +10,6 @@ export type AuthState = {
   ok?: boolean;
   error?: string;
   email?: string;
-  code?: string;
-  sent?: boolean;
   name?: string;
   password?: string;
   next?: string;
@@ -22,9 +20,21 @@ const OTP_TTL_MS = 10 * 60_000; // codes are valid for 10 minutes
 
 const EMAIL_RE = /^\S+@\S+\.\S+$/;
 
-/** Creates a 6-digit OTP, stores a hash of it, emails it, and returns the result. */
-async function issueOtp(email: string, userId: string | null): Promise<{ code?: string; sent: boolean }> {
+/**
+ * Emails a 6-digit code to the account's inbox and stores a hash of it.
+ * The code itself is never returned to the UI.
+ */
+async function issueOtp(email: string, userId: string | null): Promise<{ ok: boolean; error?: string }> {
   const code = randomInt(100000, 1_000_000).toString();
+  const mail = await sendOtpEmail(email, code);
+  if (!mail.sent) {
+    return {
+      ok: false,
+      error:
+        "We couldn’t email your code — the email service isn’t set up yet. Please try again later.",
+    };
+  }
+
   await prisma.passwordReset.create({
     data: {
       codeHash: sha256(code),
@@ -38,9 +48,7 @@ async function issueOtp(email: string, userId: string | null): Promise<{ code?: 
     where: { OR: [{ usedAt: { not: null } }, { expiresAt: { lt: new Date() } }] },
   });
 
-  const mail = await sendOtpEmail(email, code);
-  if (mail.sent) return { sent: true };
-  return { sent: false, code };
+  return { ok: true };
 }
 
 /**
@@ -66,7 +74,8 @@ export async function registerAction(formData: FormData): Promise<AuthState> {
   }
 
   const otp = await issueOtp(email, null);
-  return { ok: true, email, name, password, next, ...(otp.sent ? {} : { code: otp.code }), sent: otp.sent };
+  if (!otp.ok) return { error: otp.error };
+  return { ok: true, email, name, password, next };
 }
 
 /**

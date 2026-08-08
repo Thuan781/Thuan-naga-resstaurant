@@ -9,8 +9,6 @@ export type PasswordState = {
   ok?: boolean;
   error?: string;
   email?: string;
-  code?: string;
-  sent?: boolean;
 };
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -27,6 +25,13 @@ export async function requestResetAction(formData: FormData): Promise<PasswordSt
   if (!user) return { error: "No account found with that email." };
 
   const code = randomInt(100000, 1_000_000).toString();
+  const mail = await sendOtpEmail(email, code);
+  if (!mail.sent) {
+    return {
+      error: "We couldn’t email your reset code — the email service isn’t set up yet. Please try again later.",
+    };
+  }
+
   await prisma.passwordReset.create({
     data: {
       codeHash: sha256(code),
@@ -39,9 +44,7 @@ export async function requestResetAction(formData: FormData): Promise<PasswordSt
     where: { OR: [{ usedAt: { not: null } }, { expiresAt: { lt: new Date() } }] },
   });
 
-  const mail = await sendOtpEmail(email, code);
-  if (mail.sent) return { ok: true, email, sent: true };
-  return { ok: true, email, code, sent: false };
+  return { ok: true, email };
 }
 
 /** Step 2: verify the code and set the new password. */

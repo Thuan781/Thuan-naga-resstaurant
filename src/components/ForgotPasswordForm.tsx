@@ -8,8 +8,6 @@ import OtpStatusPanel from "./OtpStatusPanel";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
-  const [shownCode, setShownCode] = useState<string | null>(null);
-  const [codeSent, setCodeSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -24,8 +22,6 @@ export default function ForgotPasswordForm() {
     }
     if (res?.ok && res.email) {
       setEmail(res.email);
-      setShownCode(res.code ?? null);
-      setCodeSent(!!res.sent);
     }
   }
 
@@ -37,10 +33,6 @@ export default function ForgotPasswordForm() {
     const res = await requestResetAction(fd);
     setPending(false);
     if (res?.error) setError(res.error);
-    else {
-      setShownCode(res?.code ?? null);
-      setCodeSent(!!res?.sent);
-    }
   }
 
   return (
@@ -51,9 +43,9 @@ export default function ForgotPasswordForm() {
             {error}
           </p>
         )}
-        {shownCode ? (
+        {email ? (
           <>
-            <OtpStatusPanel sent={codeSent} email={email} code={shownCode} />
+            <OtpStatusPanel email={email} />
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-400">Code expires in 10 minutes.</span>
               <button

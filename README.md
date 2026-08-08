@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Thuan Naga Restaurant — Online Ordering Platform
 
-## Getting Started
+A full-stack food ordering & delivery platform for **Thuan Naga Restaurant, Tamenglong, Manipur** —
+the Phase 1 MVP of the project brief: authentication, menu browsing with customisations, cart,
+COD checkout, live order tracking, reviews, and a complete admin panel.
 
-First, run the development server:
+Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + SQLite + Zustand**.
+
+## Demo accounts
+
+| Role     | Email                 | Password   |
+| -------- | --------------------- | ---------- |
+| Admin    | admin@thuannaga.com   | `admin123` |
+| Customer | demo@thuannaga.com    | `demo123`  |
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npx prisma db push      # create the SQLite database
+npm run db:seed         # seed menu, users, sample orders, settings
+npm run dev             # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `npm run dev` — start the dev server
+- `npm run build` / `npm start` — production build & serve
+- `npm run db:push` — sync Prisma schema to the database
+- `npm run db:seed` — (re)seed demo data
+- `npm run db:studio` — browse the database in Prisma Studio
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## What's included (Phase 1 MVP)
 
-## Learn More
+**Customer**
+- Register / login with bcrypt-hashed passwords and secure cookie sessions
+- Menu with categories, search, veg/spice/price filters, trending section
+- Dish detail with add-ons, quantity, and special instructions
+- Cart with promo codes (WELCOME10, SPICY15, THUAN20) and live totals
+- Checkout with saved addresses, COD-only payments, and store-status gating
+- Order tracking timeline (Confirmed → Preparing → Ready → Out for Delivery → Delivered)
+  with auto-refresh, plus order history, one-click reorder, and reviews/ratings
 
-To learn more about Next.js, take a look at the following resources:
+**Admin (`/admin`)**
+- Dashboard: today's revenue, order counts, top items, payment split
+- Menu management: add / edit / delete items and categories
+- Order management: filter, advance status, cancel with reason
+- Store settings: open/limited/closed status, operating hours per day,
+  delivery fees & minimum order, COD toggles and limits
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+prisma/schema.prisma   # data model (users, sessions, menu, orders, settings, promos)
+prisma/seed.ts         # demo data
+src/app/               # routes (customer + /admin)
+src/components/        # shared UI
+src/actions/           # server actions (auth, orders, admin)
+src/lib/               # prisma client, auth, validation, status logic
+src/store/cart.ts      # Zustand cart with localStorage persistence
+```
 
-## Deploy on Vercel
+## Photo credits
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Dish photos in `public/food/` are placeholder stock photography for development:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Most dishes: [TheMealDB](https://www.themealdb.com/) meal photos (free for non-commercial use).
+- Naga Thali, Ginger Honey Lemonade, Naga Black Tea, Fresh Lime Soda: [Wikimedia Commons](https://commons.wikimedia.org/)
+  (CC BY-SA / CC BY licensed; credits recorded in `prisma/seed.ts` by file number).
+
+Replace these with real photos of the restaurant's dishes before launch.
+
+## Roadmap (later phases from the brief)
+
+- Phase 2: Razorpay (UPI / cards / wallets) + payment status & refunds
+- Phase 3: real-time socket updates, delivery-partner tracking with maps
+- Phase 4: Google/Apple OAuth, 3D product views (Three.js/Spline)
+- Phase 5: referrals, loyalty points, analytics dashboards

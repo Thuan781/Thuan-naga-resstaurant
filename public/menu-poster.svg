@@ -1,0 +1,115 @@
+<svg width="900" height="1200" viewBox="0 0 900 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#1a1030"/>
+      <stop offset="55%" stop-color="#0b0f1a"/>
+      <stop offset="100%" stop-color="#05070d"/>
+    </radialGradient>
+    <radialGradient id="blobOrange" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff6b35" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ff6b35" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blobGreen" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2ece76" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#2ece76" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blobGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd700" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glowOrange" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#ff6b35" flood-opacity="0.9"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowGreen" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#2ece76" flood-opacity="0.9"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowGold" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feFlood flood-color="#ffd700" flood-opacity="0.9"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="900" height="1200" fill="url(#bgGlow)"/>
+  <circle cx="120" cy="180" r="260" fill="url(#blobOrange)"/>
+  <circle cx="800" cy="420" r="300" fill="url(#blobGreen)"/>
+  <circle cx="450" cy="1050" r="340" fill="url(#blobGold)"/>
+
+  <!-- Neon bowl mark -->
+  <g filter="url(#glowOrange)">
+    <circle cx="450" cy="215" r="86" fill="none" stroke="#ff6b35" stroke-width="3"/>
+    <circle cx="450" cy="215" r="62" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.7"/>
+    <path d="M392 205 Q410 178 430 196 M458 196 Q478 178 498 205" stroke="#ff6b35" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Title -->
+  <text x="450" y="410" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="120" font-weight="700" fill="#ffffff" filter="url(#glowOrange)">THUAN</text>
+  <text x="450" y="492" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-style="italic" fill="#ff6b35" filter="url(#glowOrange)">Rongmei</text>
+
+  <!-- Rule -->
+  <line x1="250" y1="525" x2="380" y2="525" stroke="#ffd700" stroke-width="2" filter="url(#glowGold)"/>
+  <rect x="436" y="516" width="28" height="18" fill="#ffd700" filter="url(#glowGold)" transform="rotate(45 450 525)"/>
+  <line x1="520" y1="525" x2="650" y2="525" stroke="#ffd700" stroke-width="2" filter="url(#glowGold)"/>
+
+  <text x="450" y="590" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" letter-spacing="12" font-weight="600" fill="#e8e6e3">NAGA RESTAURANT</text>
+  <text x="450" y="640" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="17" letter-spacing="5" fill="#ffd700" filter="url(#glowGold)">NAGA FLAVOURS. WARM HEARTS.</text>
+
+  <!-- Dish grid -->
+  <g font-family="Arial, Helvetica, sans-serif">
+    <!-- Row 1 -->
+    <g filter="url(#glowOrange)">
+      <circle cx="200" cy="770" r="62" fill="none" stroke="#ff6b35" stroke-width="2.5"/>
+      <text x="200" y="788" text-anchor="middle" font-size="54">🍖</text>
+    </g>
+    <text x="200" y="858" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">Smoked Pork</text>
+    <text x="200" y="886" text-anchor="middle" font-size="18" fill="#ff6b35" filter="url(#glowOrange)">₹220</text>
+
+    <g filter="url(#glowGreen)">
+      <circle cx="450" cy="770" r="62" fill="none" stroke="#2ece76" stroke-width="2.5"/>
+      <text x="450" y="788" text-anchor="middle" font-size="54">🍱</text>
+    </g>
+    <text x="450" y="858" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">Naga Thali</text>
+    <text x="450" y="886" text-anchor="middle" font-size="18" fill="#2ece76" filter="url(#glowGreen)">₹180</text>
+
+    <g filter="url(#glowGold)">
+      <circle cx="700" cy="770" r="62" fill="none" stroke="#ffd700" stroke-width="2.5"/>
+      <text x="700" y="788" text-anchor="middle" font-size="54">🥟</text>
+    </g>
+    <text x="700" y="858" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">Pork Momos</text>
+    <text x="700" y="886" text-anchor="middle" font-size="18" fill="#ffd700" filter="url(#glowGold)">₹140</text>
+
+    <!-- Row 2 -->
+    <g filter="url(#glowGreen)">
+      <circle cx="200" cy="970" r="62" fill="none" stroke="#2ece76" stroke-width="2.5"/>
+      <text x="200" y="988" text-anchor="middle" font-size="54">🌶️</text>
+    </g>
+    <text x="200" y="1058" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">King Chilli Wings</text>
+    <text x="200" y="1086" text-anchor="middle" font-size="18" fill="#2ece76" filter="url(#glowGreen)">₹180</text>
+
+    <g filter="url(#glowGold)">
+      <circle cx="450" cy="970" r="62" fill="none" stroke="#ffd700" stroke-width="2.5"/>
+      <text x="450" y="988" text-anchor="middle" font-size="54">🍛</text>
+    </g>
+    <text x="450" y="1058" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">Smoked Chicken</text>
+    <text x="450" y="1086" text-anchor="middle" font-size="18" fill="#ffd700" filter="url(#glowGold)">₹210</text>
+
+    <g filter="url(#glowOrange)">
+      <circle cx="700" cy="970" r="62" fill="none" stroke="#ff6b35" stroke-width="2.5"/>
+      <text x="700" y="988" text-anchor="middle" font-size="54">🧋</text>
+    </g>
+    <text x="700" y="1058" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">Naga Tea</text>
+    <text x="700" y="1086" text-anchor="middle" font-size="18" fill="#ff6b35" filter="url(#glowOrange)">₹40</text>
+  </g>
+
+  <!-- Footer -->
+  <line x1="150" y1="1128" x2="750" y2="1128" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.5"/>
+  <text x="450" y="1158" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#ffffff" opacity="0.9">Thuan Naga Restaurant · Tamenglong, Manipur</text>
+  <text x="450" y="1185" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#8a94a6">+91 60099 21828 · kthuan781@gmail.com · Open 10 AM – 9:30 PM</text>
+</svg>

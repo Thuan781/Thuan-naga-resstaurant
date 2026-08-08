@@ -1,26 +1,273 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Brand orange — Naga spice */
+  --color-primary-50: #fff4ed;
+  --color-primary-100: #ffe7d9;
+  --color-primary-200: #ffc9ac;
+  --color-primary-300: #ffa578;
+  --color-primary-400: #ff854d;
+  --color-primary-500: #ff6b35;
+  --color-primary-600: #ef5316;
+  --color-primary-700: #c7430f;
+  --color-primary-800: #9e3710;
+  --color-primary-900: #7f2f11;
+
+  /* Fresh green — health & freshness */
+  --color-accent-50: #ebfbf1;
+  --color-accent-100: #d3f6e0;
+  --color-accent-200: #aaedc4;
+  --color-accent-300: #72dea0;
+  --color-accent-400: #2ece76;
+  --color-accent-500: #14b55e;
+  --color-accent-600: #0b934c;
+  --color-accent-700: #0c743e;
+  --color-accent-800: #0d5c34;
+  --color-accent-900: #0b4c2c;
+
+  /* Naga crimson from the logo */
+  --color-crimson: #8b1e1e;
+  --color-crimson-light: #b33a3a;
+
+  /* Golden yellow — warmth & hospitality */
+  --color-gold: #ffd700;
+  --color-gold-dark: #e6b800;
+
+  /* Typography */
+  --font-sans: var(--font-poppins), "Poppins", "Inter", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-script: var(--font-great-vibes), "Great Vibes", "Segoe Script", cursive;
+
+  /* Animations */
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-pop: pop 0.35s ease-out;
+  --animate-slide-in: slide-in 0.3s ease-out both;
+  --animate-neon-pulse: neon-pulse 2.6s ease-in-out infinite;
+  --animate-glow-spin: glow-spin 9s linear infinite;
+  --animate-flicker: flicker 5s linear infinite;
+  --animate-tilt-float: tilt-float 7s ease-in-out infinite;
+  --animate-bubble-pop: bubble-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes neon-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 107, 53, 0.9)) drop-shadow(0 0 18px rgba(255, 107, 53, 0.5));
+  }
+  50% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 10px rgba(255, 107, 53, 1)) drop-shadow(0 0 30px rgba(255, 107, 53, 0.7));
+  }
+}
+
+@keyframes glow-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  3% {
+    opacity: 0.6;
+  }
+  6% {
+    opacity: 1;
+  }
+  9% {
+    opacity: 0.75;
+  }
+  11% {
+    opacity: 1;
+  }
+  54% {
+    opacity: 1;
+  }
+  56% {
+    opacity: 0.7;
+  }
+  58% {
+    opacity: 1;
+  }
+}
+
+@keyframes bubble-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes tilt-float {
+  0%,
+  100% {
+    transform: perspective(1200px) rotateY(-8deg) rotateX(4deg);
+  }
+  50% {
+    transform: perspective(1200px) rotateY(8deg) rotateX(-4deg);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #fffdfb;
+  color: #1f2937;
+}
+
+::selection {
+  background: var(--color-primary-200);
+}
+
+/* ---- Stylish headings ---- */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* ---- Neon utilities ---- */
+.neon-orange {
+  color: #fff;
+  text-shadow:
+    0 0 6px rgba(255, 107, 53, 0.95),
+    0 0 18px rgba(255, 107, 53, 0.75),
+    0 0 42px rgba(255, 107, 53, 0.55),
+    0 0 80px rgba(255, 107, 53, 0.35);
+}
+
+.neon-green {
+  color: #eafff3;
+  text-shadow:
+    0 0 6px rgba(46, 206, 118, 0.95),
+    0 0 18px rgba(46, 206, 118, 0.75),
+    0 0 42px rgba(46, 206, 118, 0.55),
+    0 0 80px rgba(46, 206, 118, 0.35);
+}
+
+.neon-gold {
+  color: #fff7d6;
+  text-shadow:
+    0 0 6px rgba(255, 215, 0, 0.95),
+    0 0 18px rgba(255, 215, 0, 0.7),
+    0 0 40px rgba(255, 215, 0, 0.5);
+}
+
+.neon-crimson {
+  color: #ffecec;
+  text-shadow:
+    0 0 6px rgba(179, 58, 58, 0.95),
+    0 0 18px rgba(179, 58, 58, 0.75),
+    0 0 40px rgba(179, 58, 58, 0.55);
+}
+
+.neon-ring {
+  box-shadow:
+    0 0 8px rgba(255, 107, 53, 0.65),
+    0 0 26px rgba(255, 107, 53, 0.4),
+    0 0 60px rgba(255, 107, 53, 0.22),
+    inset 0 0 14px rgba(255, 255, 255, 0.35);
+}
+
+.neon-ring-green {
+  box-shadow:
+    0 0 8px rgba(46, 206, 118, 0.65),
+    0 0 26px rgba(46, 206, 118, 0.4),
+    0 0 60px rgba(46, 206, 118, 0.22),
+    inset 0 0 14px rgba(255, 255, 255, 0.35);
+}
+
+.neon-btn {
+  box-shadow:
+    0 0 10px rgba(255, 107, 53, 0.75),
+    0 0 30px rgba(255, 107, 53, 0.45),
+    0 8px 24px rgba(255, 107, 53, 0.35);
+}
+
+.neon-btn:hover {
+  box-shadow:
+    0 0 16px rgba(255, 107, 53, 0.95),
+    0 0 50px rgba(255, 107, 53, 0.6),
+    0 10px 32px rgba(255, 107, 53, 0.45);
+}
+
+/* 3D tilt cards with a neon glow on hover */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.tilt-card:hover {
+  transform: perspective(900px) rotateY(6deg) rotateX(2.5deg) translateY(-6px) scale(1.015);
+  box-shadow:
+    0 0 0 1px rgba(255, 107, 53, 0.35),
+    0 0 22px rgba(255, 107, 53, 0.3),
+    0 18px 40px rgba(0, 0, 0, 0.18);
 }

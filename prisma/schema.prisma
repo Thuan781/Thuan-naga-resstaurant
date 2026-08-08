@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum StoreStatus {
+  OPEN
+  LIMITED
+  CLOSED
+}
+
+enum OrderStatus {
+  CONFIRMED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  UPI
+  CARD
+  WALLET
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  phone        String?
+  passwordHash String
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+  addresses    Address[]
+  orders       Order[]
+  reviews      Review[]
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label       String
+  fullAddress String
+  phone       String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  emoji     String?
+  sortOrder Int        @default(0)
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id          String      @id @default(cuid())
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  name        String
+  description String
+  price       Float
+  emoji       String?
+  imageUrl    String?
+  prepTime    Int         @default(15)
+  isAvailable Boolean     @default(true)
+  isVeg       Boolean     @default(false)
+  spiceLevel  Int         @default(0)
+  tags        String      @default("")
+  addons      String      @default("[]")
+  rating      Float       @default(0)
+  ratingCount Int         @default(0)
+  isTrending  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id                  String        @id @default(cuid())
+  orderNumber         Int           @unique
+  userId              String
+  user                User          @relation(fields: [userId], references: [id])
+  deliveryName        String
+  deliveryPhone       String
+  deliveryAddress     String
+  items               OrderItem[]
+  subtotal            Float
+  tax                 Float
+  deliveryFee         Float
+  discount            Float         @default(0)
+  promoCode           String?
+  total               Float
+  paymentMethod       PaymentMethod @default(COD)
+  paymentStatus       PaymentStatus @default(PENDING)
+  paymentRef          String?
+  status              OrderStatus   @default(CONFIRMED)
+  statusHistory       String        @default("[]")
+  specialInstructions String?
+  estimatedMinutes    Int           @default(45)
+  createdAt           DateTime      @default(now())
+  deliveredAt         DateTime?
+  cancelledAt         DateTime?
+  cancelReason        String?
+  review              Review?
+}
+
+model OrderItem {
+  id       String    @id @default(cuid())
+  orderId  String
+  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId   String?
+  item     MenuItem? @relation(fields: [itemId], references: [id])
+  name     String
+  price    Float
+  quantity Int
+  addons   String    @default("[]")
+  note     String?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+model RestaurantSettings {
+  id                Int         @id @default(1)
+  storeStatus       StoreStatus @default(OPEN)
+  emergencyMessage  String?
+  hours             String      @default("[]")
+  deliveryEnabled   Boolean     @default(true)
+  deliveryFee       Float       @default(25)
+  freeDeliveryAbove Float       @default(300)
+  minOrderValue     Float       @default(100)
+  codEnabled        Boolean     @default(true)
+  codMaxAmount      Float       @default(1500)
+  upiEnabled        Boolean     @default(true)
+  upiId             String      @default("kthuan781-1@okaxis")
+  address           String?
+  phone             String?
+  updatedAt         DateTime    @updatedAt
+}
+
+model PromoCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  description     String?
+  discountPercent Float
+  minOrder        Float     @default(0)
+  maxUses         Int?
+  usedCount       Int       @default(0)
+  expiresAt       DateTime?
+  active          Boolean   @default(true)
+}

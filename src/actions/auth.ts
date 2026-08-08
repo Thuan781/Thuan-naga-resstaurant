@@ -4,12 +4,14 @@ import { redirect } from "next/navigation";
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { createSession, destroySession, hashPassword } from "@/lib/auth";
+import { sendOtpEmail } from "@/lib/email";
 
 export type AuthState = {
   ok?: boolean;
   error?: string;
   email?: string;
   code?: string;
+  sent?: boolean;
   mode?: string;
 };
 
@@ -20,8 +22,8 @@ const EMAIL_RE = /^\S+@\S+\.\S+$/;
 
 /**
  * Step 1 of OTP login: validate the email, find (or create) the account,
- * and generate a 6-digit code. No email service is connected yet, so the
- * code is returned here for the UI to display.
+ * generate a 6-digit code and email it to the customer. The code is only
+ * returned for on-screen display if no email service is configured yet.
  */
 export async function requestOtpAction(formData: FormData): Promise<AuthState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -58,7 +60,13 @@ export async function requestOtpAction(formData: FormData): Promise<AuthState> {
     where: { OR: [{ usedAt: { not: null } }, { expiresAt: { lt: new Date() } }] },
   });
 
-  return { ok: true, email, code, mode };
+  // Email the code to the customer's inbox. If email isn't configured yet,
+  // fall back to returning the code for on-screen display.
+  const mail = await sendOtpEmail(email, code);
+  if (mail.sent) {
+    return { ok: true, email, sent: true, mode };
+  }
+  return { ok: true, email, code, sent: false, mode };
 }
 
 /**

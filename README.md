@@ -8,13 +8,27 @@ Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + Post
 
 ## Demo accounts
 
-Login is **email + OTP** (no passwords). Enter the email and use the 6-digit code shown on screen
-(no email service is connected yet, so the code is displayed instead of emailed).
+Login is **email + OTP** (no passwords). Enter your email and the 6-digit code is sent to your
+inbox (needs the email settings below — until then the code is shown on screen).
 
 | Role     | Email               |
 | -------- | ------------------- |
 | Admin    | kthuan781@gmail.com |
 | Customer | demo@thuannaga.com  |
+
+## Email (OTP delivery)
+
+Recommended — **Gmail SMTP** (uses your existing Gmail, delivers to any customer, free):
+
+1. Enable **2-Step Verification** on your Google account: myaccount.google.com/security
+2. Create an **App Password**: myaccount.google.com/apppasswords → name it e.g. “thuan naga” →
+   copy the 16-character password.
+3. Set `SMTP_USER` to your Gmail and `SMTP_PASS` to that app password in `.env` (and in Vercel
+   **Settings → Environment Variables**): `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`,
+   `SMTP_SECURE=false`.
+
+Alternative: Resend (`RESEND_API_KEY`) — note the free sandbox only delivers to your own inbox
+until a domain is verified.
 
 ## Getting started
 

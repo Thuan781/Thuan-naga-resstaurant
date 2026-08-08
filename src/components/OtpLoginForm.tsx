@@ -23,6 +23,7 @@ export default function OtpLoginForm({
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [shownCode, setShownCode] = useState<string | null>(null);
+  const [codeSent, setCodeSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -39,6 +40,7 @@ export default function OtpLoginForm({
     if (res?.ok && res.email) {
       setEmail(res.email);
       setShownCode(res.code ?? null);
+      setCodeSent(!!res.sent);
       setCode("");
       setStep("otp");
     }
@@ -53,7 +55,10 @@ export default function OtpLoginForm({
     const res = await requestOtpAction(fd);
     setSending(false);
     if (res?.error) setError(res.error);
-    else if (res?.code) setShownCode(res.code);
+    else {
+      setShownCode(res?.code ?? null);
+      setCodeSent(!!res?.sent);
+    }
   }
 
   async function handleVerify(formData: FormData) {
@@ -143,17 +148,30 @@ export default function OtpLoginForm({
             {error}
           </p>
         )}
-        <div className="rounded-xl bg-accent-50 px-4 py-3 ring-1 ring-accent-200">
-          <p className="text-xs font-bold uppercase tracking-wide text-accent-700">
-            Your code — email not connected yet
-          </p>
-          <p className="mt-1 text-center text-3xl font-extrabold tracking-[0.35em] text-slate-900">
-            {shownCode ?? "······"}
-          </p>
-          <p className="mt-1 text-xs text-accent-700">
-            Once an email service is connected, this code will be sent to your inbox instead.
-          </p>
-        </div>
+        {codeSent ? (
+          <div className="rounded-xl bg-accent-50 px-4 py-3 ring-1 ring-accent-200">
+            <p className="text-xs font-bold uppercase tracking-wide text-accent-700">📧 Code sent</p>
+            <p className="mt-1 text-sm font-medium text-slate-800">
+              We emailed a 6-digit code to <span className="font-semibold">{email}</span>. Enter it
+              below — it expires in 10 minutes.
+            </p>
+            <p className="mt-1 text-xs text-accent-700">
+              Didn’t get it? Check spam, then press “Resend code”.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-xl bg-amber-50 px-4 py-3 ring-1 ring-amber-200">
+            <p className="text-xs font-bold uppercase tracking-wide text-amber-700">
+              ⚠️ Email isn’t connected yet
+            </p>
+            <p className="mt-1 text-center text-3xl font-extrabold tracking-[0.35em] text-slate-900">
+              {shownCode ?? "······"}
+            </p>
+            <p className="mt-1 text-xs text-amber-700">
+              The owner needs to add email settings for codes to be sent to your inbox.
+            </p>
+          </div>
+        )}
         <Field label="Email">
           <input name="email" value={email} readOnly className={inputCls(true)} />
         </Field>

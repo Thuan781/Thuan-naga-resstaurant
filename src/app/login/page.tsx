@@ -40,8 +40,8 @@ export default async function LoginPage({
         <OtpLoginForm mode="customer" next={next} googleEnabled={googleEnabled} />
       </div>
       <p className="mt-4 text-center text-xs text-slate-400">
-        Demo account: <span className="font-mono">demo@thuannaga.com</span> — enter it above and use
-        the code shown.
+        Demo account: <span className="font-mono">demo@thuannaga.com</span> — enter it above and
+        use the code you receive.
       </p>
       <Link href="/" className="mt-3 text-center text-sm font-medium text-slate-500 hover:text-primary-600">
         ← Back to site

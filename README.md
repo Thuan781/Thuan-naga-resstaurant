@@ -8,13 +8,16 @@ Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + Post
 
 ## Demo accounts
 
-Login is **email + OTP** (no passwords). Enter your email and the 6-digit code is sent to your
-inbox (needs the email settings below — until then the code is shown on screen).
+**Sign-up verifies the email with an OTP** (sent to the inbox — needs the email settings below;
+until then the code is shown on screen), then the customer logs in with the password they set.
 
-| Role     | Email               |
-| -------- | ------------------- |
-| Admin    | kthuan781@gmail.com |
-| Customer | demo@thuannaga.com  |
+| Role     | Email                 | Password   |
+| -------- | --------------------- | ---------- |
+| Admin    | kthuan781@gmail.com   | `admin123` |
+| Customer | demo@thuannaga.com    | `demo123`  |
+
+Staff accounts are created by the owner in **Admin → Settings → Admin access**; the staff member
+then sets their own password via **Forgot password** (OTP emailed to them).
 
 ## Email (OTP delivery)
 

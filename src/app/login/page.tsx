@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import OtpLoginForm from "@/components/OtpLoginForm";
+import LoginForm from "@/components/LoginForm";
 import { Logo } from "@/components/Logo";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -37,11 +37,11 @@ export default async function LoginPage({
             Google sign-in failed. Please try again.
           </p>
         )}
-        <OtpLoginForm mode="customer" next={next} googleEnabled={googleEnabled} />
+        <LoginForm next={next} googleEnabled={googleEnabled} />
       </div>
       <p className="mt-4 text-center text-xs text-slate-400">
-        Demo account: <span className="font-mono">demo@thuannaga.com</span> — enter it above and
-        use the code you receive.
+        Demo account: <span className="font-mono">demo@thuannaga.com</span> /{" "}
+        <span className="font-mono">demo123</span>
       </p>
       <Link href="/" className="mt-3 text-center text-sm font-medium text-slate-500 hover:text-primary-600">
         ← Back to site

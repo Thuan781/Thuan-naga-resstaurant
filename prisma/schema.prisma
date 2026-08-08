@@ -68,12 +68,14 @@ model Session {
 model PasswordReset {
   id        String    @id @default(cuid())
   codeHash  String
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   usedAt    DateTime?
   createdAt DateTime  @default(now())
 
+  @@index([email])
   @@index([userId])
 }
 

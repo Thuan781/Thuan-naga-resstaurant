@@ -9,6 +9,7 @@ export const SESSION_COOKIE = "tn_session";
 const SESSION_DAYS = 30;
 
 export const hashPassword = (pw: string) => bcrypt.hash(pw, 10);
+export const verifyPassword = (pw: string, hash: string) => bcrypt.compare(pw, hash);
 
 export async function createSession(userId: string): Promise<void> {
   const token = randomBytes(32).toString("hex");

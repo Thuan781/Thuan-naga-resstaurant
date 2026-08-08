@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import SettingsForm from "@/components/admin/SettingsForm";
+import AdminAccess, { type AdminUser } from "@/components/admin/AdminAccess";
 import { parseHours } from "@/lib/store-status";
 
 export const metadata: Metadata = { title: "Settings", robots: { index: false } };
 
 export default async function AdminSettingsPage() {
-  const settings = await prisma.restaurantSettings.findFirst();
+  const [settings, currentUser, admins] = await Promise.all([
+    prisma.restaurantSettings.findFirst(),
+    getCurrentUser(),
+    prisma.user.findMany({
+      where: { role: "ADMIN" },
+      select: { id: true, name: true, email: true },
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
 
   const defaults = {
     storeStatus: "OPEN",
@@ -44,8 +54,16 @@ export default async function AdminSettingsPage() {
       <p className="mt-1 text-sm text-slate-500">
         These changes take effect for customers immediately.
       </p>
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
         <SettingsForm settings={{ ...data, hours: parseHours(data.hours) }} />
+        <AdminAccess
+          admins={admins.map<AdminUser>((a) => ({
+            id: a.id,
+            name: a.name,
+            email: a.email,
+            isSelf: currentUser?.email.toLowerCase() === a.email.toLowerCase(),
+          }))}
+        />
       </div>
     </div>
   );

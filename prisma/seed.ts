@@ -33,7 +33,7 @@ async function main() {
   await prisma.user.create({
     data: {
       name: "Thuankubuan Kamei",
-      email: "admin@thuannaga.com",
+      email: "kthuan781@gmail.com",
       phone: "+91 60099 21828",
       passwordHash: hash("admin123"),
       role: "ADMIN",
@@ -389,7 +389,7 @@ async function main() {
   });
 
   console.log(`Seeded DB: ${items.length} menu items, ${cats.length} categories, 2 users, 2 sample orders.`);
-  console.log("Admin login: admin@thuannaga.com / admin123");
+  console.log("Admin login: kthuan781@gmail.com / admin123");
   console.log("Customer login: demo@thuannaga.com / demo123");
 }
 

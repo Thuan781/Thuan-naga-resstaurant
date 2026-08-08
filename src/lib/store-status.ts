@@ -29,6 +29,27 @@ function toMinutes(t: string): number {
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+// Restaurant hours are entered in Indian time, so the open/closed check must
+// always use Asia/Kolkata — Vercel servers otherwise run in UTC and would
+// misjudge the current time.
+export const RESTAURANT_TZ = "Asia/Kolkata";
+
+function currentDayMinutes(): { day: number; minutes: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: RESTAURANT_TZ,
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "0";
+  const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  return {
+    day: dayMap[get("weekday")] ?? new Date().getDay(),
+    minutes: Number(get("hour")) * 60 + Number(get("minute")),
+  };
+}
+
 export interface StoreStatusInfo {
   canOrder: boolean;
   label: string;
@@ -36,11 +57,10 @@ export interface StoreStatusInfo {
   kind: "open" | "limited" | "closed" | "closed-hours" | "delivery-off";
 }
 
-export function getStoreStatus(settings: StoreSettingsInput, now: Date = new Date()): StoreStatusInfo {
+export function getStoreStatus(settings: StoreSettingsInput): StoreStatusInfo {
   const hours = parseHours(settings.hours);
-  const day = now.getDay();
+  const { day, minutes } = currentDayMinutes();
   const today = hours.find((h) => h.day === day);
-  const minutes = now.getHours() * 60 + now.getMinutes();
   const withinHours = !!today && !today.closed && minutes >= toMinutes(today.open) && minutes < toMinutes(today.close);
   const closeLabel = today && !today.closed ? `Closes at ${today.close}` : "";
 

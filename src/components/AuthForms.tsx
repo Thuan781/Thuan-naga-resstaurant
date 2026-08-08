@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { loginAction, registerAction, type AuthState } from "@/actions/auth";
 import { SubmitButton } from "./SubmitButton";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 const initial: AuthState = {};
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, googleEnabled = false }: { next?: string; googleEnabled?: boolean }) {
   const [state, action, pending] = useActionState(loginAction, initial);
   return (
+    <div>
     <form action={action} className="mt-6 space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       {state.error && (
@@ -34,6 +36,11 @@ export function LoginForm({ next }: { next?: string }) {
           placeholder="••••••••"
           className={inputCls(!!state.fieldErrors?.password)}
         />
+        <span className="mt-1.5 block text-right">
+          <Link href="/forgot-password" className="text-xs font-semibold text-primary-600 hover:text-primary-700">
+            Forgot password?
+          </Link>
+        </span>
       </Field>
       <SubmitButton pending={pending} className="w-full bg-primary-500 hover:bg-primary-600">
         Log in
@@ -45,12 +52,16 @@ export function LoginForm({ next }: { next?: string }) {
         </Link>
       </p>
     </form>
+    <GoogleDivider />
+    <GoogleLoginButton mode="customer" next={next} enabled={googleEnabled} />
+    </div>
   );
 }
 
-export function RegisterForm({ next }: { next?: string }) {
+export function RegisterForm({ next, googleEnabled = false }: { next?: string; googleEnabled?: boolean }) {
   const [state, action, pending] = useActionState(registerAction, initial);
   return (
+    <div>
     <form action={action} className="mt-6 space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       {state.error && (
@@ -80,6 +91,19 @@ export function RegisterForm({ next }: { next?: string }) {
         </Link>
       </p>
     </form>
+    <GoogleDivider />
+    <GoogleLoginButton mode="customer" next={next} enabled={googleEnabled} />
+    </div>
+  );
+}
+
+function GoogleDivider() {
+  return (
+    <div className="my-5 flex items-center gap-3">
+      <span className="h-px flex-1 bg-slate-200" />
+      <span className="text-xs font-medium text-slate-400">or continue with</span>
+      <span className="h-px flex-1 bg-slate-200" />
+    </div>
   );
 }
 

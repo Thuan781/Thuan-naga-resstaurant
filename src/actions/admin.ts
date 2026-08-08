@@ -1,9 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { categorySchema, menuItemSchema, settingsSchema } from "@/lib/validation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, hashPassword } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { nextStatus, type OrderStatusValue } from "@/lib/order-status";
 
@@ -243,5 +244,46 @@ export async function cancelOrderAction(
       cancelReason: reason || null,
     },
   });
+  return { ok: true };
+}
+
+export async function addAdminAction(
+  _prev: AdminState,
+  formData: FormData
+): Promise<AdminState> {
+  await requireAdmin();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const name = String(formData.get("name") ?? "").trim();
+  if (!/^\S+@\S+\.\S+$/.test(email)) return { error: "Enter a valid email address." };
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    if (existing.role === "ADMIN") return { error: "This email already has admin access." };
+    await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
+    return { ok: true };
+  }
+  // New account: random password — the person sets their own via "Forgot password".
+  await prisma.user.create({
+    data: {
+      email,
+      name: name || email.split("@")[0],
+      passwordHash: await hashPassword(randomBytes(16).toString("hex")),
+      role: "ADMIN",
+    },
+  });
+  return { ok: true };
+}
+
+export async function removeAdminAction(
+  _prev: AdminState,
+  formData: FormData
+): Promise<AdminState> {
+  await requireAdmin();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const current = await getCurrentUser();
+  if (current && current.email.toLowerCase() === email) {
+    return { error: "You can't remove your own admin access." };
+  }
+  await prisma.user.updateMany({ where: { email }, data: { role: "CUSTOMER" } });
   return { ok: true };
 }

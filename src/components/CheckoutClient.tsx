@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import QRCode from "qrcode";
 import { useCart, cartSubtotal, lineTotal } from "@/store/cart";
 import { placeOrderAction, type ActionState } from "@/actions/orders";
 import { DishImage } from "./DishImage";
@@ -53,7 +52,6 @@ export default function CheckoutClient({
   const [paymentMethod, setPaymentMethod] = useState<PayMethod | null>(settings.upiEnabled ? "UPI" : settings.codEnabled ? "COD" : null);
   const [upiRef, setUpiRef] = useState("");
   const [upiConfirmed, setUpiConfirmed] = useState(false);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   const subtotal = cartSubtotal(items);
   const tax = round2(subtotal * 0.05);
@@ -80,16 +78,6 @@ export default function CheckoutClient({
     return `upi://pay?${params.toString()}`;
   }, [settings.upiId, total]);
 
-  useEffect(() => {
-    if (paymentMethod !== "UPI") return;
-    let alive = true;
-    QRCode.toDataURL(upiLink, { width: 200, margin: 1, color: { dark: "#0f172a", light: "#ffffff" } })
-      .then((url) => alive && setQrDataUrl(url))
-      .catch(() => alive && setQrDataUrl(null));
-    return () => {
-      alive = false;
-    };
-  }, [paymentMethod, upiLink]);
 
   const itemsJson = useMemo(
     () =>
@@ -295,12 +283,8 @@ export default function CheckoutClient({
                 <div className="rounded-xl border border-primary-100 bg-gradient-to-br from-primary-50/70 to-accent-50/40 p-4">
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="rounded-2xl bg-white p-2 shadow-sm ring-1 ring-slate-200">
-                      {qrDataUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={qrDataUrl} alt={`Scan to pay ${settings.upiId} via UPI`} width={168} height={168} className="h-40 w-40" />
-                      ) : (
-                        <div className="flex h-40 w-40 items-center justify-center text-xs text-slate-400">Generating QR…</div>
-                      )}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/upi-qr.png" alt={`Scan to pay ${settings.upiId} via UPI`} width={200} height={200} className="h-40 w-40" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-2">
                       <p className="text-sm text-slate-700">

@@ -4,13 +4,13 @@ A full-stack food ordering & delivery platform for **Thuan Naga Restaurant, Tame
 the Phase 1 MVP of the project brief: authentication, menu browsing with customisations, cart,
 COD checkout, live order tracking, reviews, and a complete admin panel.
 
-Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + SQLite + Zustand**.
+Built with **Next.js (App Router) + TypeScript + Tailwind CSS v4 + Prisma + PostgreSQL + Zustand**.
 
 ## Demo accounts
 
 | Role     | Email                 | Password   |
 | -------- | --------------------- | ---------- |
-| Admin    | admin@thuannaga.com   | `admin123` |
+| Admin    | kthuan781@gmail.com   | `admin123` |
 | Customer | demo@thuannaga.com    | `demo123`  |
 
 ## Getting started
@@ -25,7 +25,7 @@ npm run db:seed         # seed menu, users, sample orders, settings
 npm run dev             # http://localhost:3000
 ```
 
-Demo logins (after seeding): admin `admin@thuannaga.com` / `admin123` · customer `demo@thuannaga.com` / `demo123`
+Demo logins (after seeding): admin `kthuan781@gmail.com` / `admin123` · customer `demo@thuannaga.com` / `demo123`
 
 ## Deploying to Vercel
 
@@ -35,7 +35,15 @@ Demo logins (after seeding): admin `admin@thuannaga.com` / `admin123` · custome
 4. Deploy. The `vercel-build` script syncs the database schema automatically on every deploy —
    it never re-runs the seed, so live orders are preserved.
 
-## Scripts
+## Google sign-in (optional)
+
+The login pages (customer and staff) show a **Continue with Google** button once Google OAuth keys are configured:
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com) → create/select a project → **APIs & Services → Credentials → Create Credentials → OAuth client ID** (type: Web application).
+2. Add an **Authorized redirect URI**: `https://YOUR-DOMAIN/auth/google/callback` (for local testing, `http://localhost:3000/auth/google/callback`).
+3. Copy the client ID and secret into `.env` (and into Vercel **Settings → Environment Variables**):
+   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Restart the dev server, and the button appears.
+4. Customers signing in with Google get an account automatically. Staff signing in with Google can access the admin panel only if their email was added in **Admin → Settings → Admin access**.
 
 ## Scripts
 

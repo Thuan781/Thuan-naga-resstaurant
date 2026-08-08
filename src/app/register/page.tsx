@@ -16,6 +16,8 @@ export default async function RegisterPage({
   const user = await getCurrentUser();
   if (user) redirect("/");
 
+  const googleEnabled = !!process.env.GOOGLE_CLIENT_ID;
+
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-14 sm:px-6">
       <div className="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
@@ -24,7 +26,7 @@ export default async function RegisterPage({
         <p className="mt-1 text-sm text-slate-500">
           Save addresses, track orders and reorder your favourites in one tap.
         </p>
-        <RegisterForm next={next} />
+        <RegisterForm next={next} googleEnabled={googleEnabled} />
       </div>
       <Link href="/" className="mt-3 text-center text-sm font-medium text-slate-500 hover:text-primary-600">
         ← Back to site

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { cache } from "react";
 import bcrypt from "bcryptjs";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 import { prisma } from "./prisma";
 import type { User } from "@prisma/client";
 
@@ -79,4 +79,60 @@ export async function loginUser(
   }
   await createSession(user.id);
   return { user };
+}
+
+const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+const RESET_TTL_MS = 30 * 60_000; // codes are valid for 30 minutes
+
+/**
+ * Starts a password reset for an account. Returns the 6-digit code.
+ * NOTE: no email service is configured yet, so the code is returned to the
+ * caller to display. Once an email provider is added, send it there instead.
+ */
+export async function requestPasswordReset(
+  email: string
+): Promise<{ code?: string; error?: string }> {
+  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  if (!user) return { error: "No account found with that email." };
+  const code = randomInt(100000, 1_000_000).toString();
+  await prisma.passwordReset.create({
+    data: {
+      codeHash: sha256(code),
+      userId: user.id,
+      expiresAt: new Date(Date.now() + RESET_TTL_MS),
+    },
+  });
+  // tidy up old codes
+  await prisma.passwordReset.deleteMany({
+    where: { OR: [{ usedAt: { not: null } }, { expiresAt: { lt: new Date() } }] },
+  });
+  return { code };
+}
+
+export async function resetPassword(
+  email: string,
+  code: string,
+  newPassword: string
+): Promise<{ ok?: boolean; error?: string }> {
+  if (newPassword.length < 6) return { error: "Password must be at least 6 characters." };
+  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  if (!user) return { error: "No account found with that email." };
+  const reset = await prisma.passwordReset.findFirst({
+    where: {
+      userId: user.id,
+      codeHash: sha256(code.trim()),
+      usedAt: null,
+      expiresAt: { gt: new Date() },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!reset) return { error: "Invalid or expired reset code. Request a new one." };
+
+  await prisma.$transaction([
+    prisma.passwordReset.update({ where: { id: reset.id }, data: { usedAt: new Date() } }),
+    prisma.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(newPassword) } }),
+    // log out any existing sessions for this account
+    prisma.session.deleteMany({ where: { userId: user.id } }),
+  ]);
+  return { ok: true };
 }

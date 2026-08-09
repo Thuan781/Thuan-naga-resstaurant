@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   if (!clientId || !clientSecret) return fail("/login?error=google_not_configured");
 
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/auth/google/callback`;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/auth/callback/google`;
   const mode = saved.mode === "admin" ? "admin" : "customer";
   const loginPath = mode === "admin" ? "/admin/login" : "/login";
 

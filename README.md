@@ -59,9 +59,10 @@ npm run dev             # http://localhost:3000
 The login pages (customer and staff) show a **Continue with Google** button once Google OAuth keys are configured:
 
 1. Go to [console.cloud.google.com](https://console.cloud.google.com) → create/select a project → **APIs & Services → Credentials → Create Credentials → OAuth client ID** (type: Web application).
-2. Add an **Authorized redirect URI**: `https://YOUR-DOMAIN/auth/google/callback` (for local testing, `http://localhost:3000/auth/google/callback`).
+2. Add an **Authorized redirect URI**: `https://YOUR-DOMAIN/api/auth/callback/google` (for local testing, `http://localhost:3000/api/auth/callback/google`).
 3. Copy the client ID and secret into `.env` (and into Vercel **Settings → Environment Variables**):
-   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Restart the dev server, and the button appears.
+   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` (= `https://YOUR-DOMAIN/api/auth/callback/google`). Restart the dev server, and the button appears.
+4. Before going live, publish the OAuth consent screen (console → **OAuth consent screen → Publish app**) so customers don't see a “testing mode” warning.
 4. Customers signing in with Google get an account automatically. Staff signing in with Google can access the admin panel only if their email was added in **Admin → Settings → Admin access**.
 
 ## Scripts

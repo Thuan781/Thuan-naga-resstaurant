@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   });
 
   const redirectUri =
-    process.env.GOOGLE_REDIRECT_URI || `${req.nextUrl.origin}/auth/google/callback`;
+    process.env.GOOGLE_REDIRECT_URI || `${req.nextUrl.origin}/api/auth/callback/google`;
 
   const params = new URLSearchParams({
     client_id: clientId,

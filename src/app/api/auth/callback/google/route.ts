@@ -12,26 +12,41 @@ export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
   const savedRaw = cookieStore.get("tn_oauth_state")?.value;
 
-  const fail = (path: string) => {
+  console.log("[google-callback] start", {
+    hasCode: !!code,
+    hasState: !!state,
+    oauthError,
+    hasCookie: !!savedRaw,
+  });
+
+  const fail = (path: string, reason: string) => {
+    console.error("[google-callback] fail:", reason);
     cookieStore.delete("tn_oauth_state");
     return NextResponse.redirect(new URL(path, origin));
   };
 
   if (oauthError || !code || !state || !savedRaw) {
-    return fail("/login?error=google_failed");
+    return fail(
+      "/login?error=google_failed",
+      `missing params (oauthError=${oauthError}, code=${!!code}, state=${!!state}, cookie=${!!savedRaw})`
+    );
   }
 
   let saved: { state: string; mode: string; next: string };
   try {
     saved = JSON.parse(savedRaw) as { state: string; mode: string; next: string };
   } catch {
-    return fail("/login?error=google_failed");
+    return fail("/login?error=google_failed", "cookie not JSON");
   }
-  if (saved.state !== state) return fail("/login?error=google_failed");
+  if (saved.state !== state) {
+    return fail("/login?error=google_failed", "state mismatch");
+  }
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  if (!clientId || !clientSecret) return fail("/login?error=google_not_configured");
+  if (!clientId || !clientSecret) {
+    return fail("/login?error=google_not_configured", "keys missing on server");
+  }
 
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/auth/callback/google`;
   const mode = saved.mode === "admin" ? "admin" : "customer";
@@ -48,40 +63,56 @@ export async function GET(req: NextRequest) {
       grant_type: "authorization_code",
     }),
   });
-  const tokens = (await tokenRes.json()) as { access_token?: string };
-  if (!tokens.access_token) return fail(`${loginPath}?error=google_failed`);
+  const tokenBody = (await tokenRes.json()) as { access_token?: string; error?: string; error_description?: string };
+  if (!tokenRes.ok || !tokenBody.access_token) {
+    return fail(
+      `${loginPath}?error=google_failed`,
+      `token exchange failed status=${tokenRes.status} error=${tokenBody.error} desc=${tokenBody.error_description}`
+    );
+  }
 
   const infoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-    headers: { Authorization: `Bearer ${tokens.access_token}` },
+    headers: { Authorization: `Bearer ${tokenBody.access_token}` },
   });
   const info = (await infoRes.json()) as { email?: string; name?: string };
   const email = String(info.email || "").toLowerCase();
-  if (!email) return fail(`${loginPath}?error=google_failed`);
-
-  let user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    // Random password — the account signs in via Google; "Forgot password" can set one later.
-    user = await prisma.user.create({
-      data: {
-        email,
-        name: String(info.name || email.split("@")[0]).slice(0, 80),
-        passwordHash: await hashPassword(randomBytes(24).toString("hex")),
-      },
-    });
+  if (!infoRes.ok || !email) {
+    return fail(
+      `${loginPath}?error=google_failed`,
+      `userinfo failed status=${infoRes.status} email=${email || "none"}`
+    );
   }
 
-  if (mode === "admin" && user.role !== "ADMIN") {
-    return fail(`${loginPath}?error=not_admin`);
+  try {
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Random password — the account signs in via Google; "Forgot password" can set one later.
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: String(info.name || email.split("@")[0]).slice(0, 80),
+          passwordHash: await hashPassword(randomBytes(24).toString("hex")),
+        },
+      });
+    }
+
+    if (mode === "admin" && user.role !== "ADMIN") {
+      return fail(`${loginPath}?error=not_admin`, `not admin: ${email} (role=${user.role})`);
+    }
+
+    await createSession(user.id);
+    cookieStore.delete("tn_oauth_state");
+
+    const next =
+      saved.next && saved.next.startsWith("/") && !saved.next.startsWith("//")
+        ? saved.next
+        : mode === "admin"
+          ? "/admin"
+          : "/";
+    console.log("[google-callback] success", { email, mode, next });
+    return NextResponse.redirect(new URL(next, origin));
+  } catch (err) {
+    console.error("[google-callback] exception:", err);
+    return fail(`${loginPath}?error=google_failed`, "exception in db/session step");
   }
-
-  await createSession(user.id);
-  cookieStore.delete("tn_oauth_state");
-
-  const next =
-    saved.next && saved.next.startsWith("/") && !saved.next.startsWith("//")
-      ? saved.next
-      : mode === "admin"
-        ? "/admin"
-        : "/";
-  return NextResponse.redirect(new URL(next, origin));
 }
